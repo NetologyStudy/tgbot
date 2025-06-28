@@ -2,6 +2,6 @@ from aiogram.types import BotCommand
 
 
 private = [
-    BotCommand(command="help", description="Как пользоваться"),
-    BotCommand(command="bio", description="О нас"),
+    BotCommand(command="help", description="Основные команды"),
+    BotCommand(command="bio", description="Жабы"),
 ]
