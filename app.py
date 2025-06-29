@@ -7,14 +7,12 @@ from handlers.user_private import user_private_router as upr
 from common.bot_cmds_llist import private
 
 
-bot = Bot(token=settings.API_TOKEN)
-dp = Dispatcher()
-
-
-dp.include_router(upr)
-
-
 async def main():
+    bot = Bot(token=settings.API_TOKEN)
+    dp = Dispatcher()
+
+    dp.include_router(upr)
+    
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
     await dp.start_polling(bot)
