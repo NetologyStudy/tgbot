@@ -1,10 +1,12 @@
+import asyncio
 from aiogram import types, Router, html, F
 from aiogram.enums import ParseMode
 from aiogram.filters import or_f
 from aiogram.filters.command import Command, CommandStart
 from aiogram.types import CallbackQuery
+from aiogram.enums import ChatAction
 
-from keyboards.inline import get_friends_keyboard, CALLBACK_BACK_TO_MAIN
+from keyboards.inline import get_friends_keyboard, CALLBACK_BACK_TO_MAIN, main_menu_kb
 
 from user_info import  FRIEND_DATA, FRIEND_INFO
 
@@ -23,11 +25,16 @@ async def start_command(message: types.Message):
     user_name = message.from_user.username
     full_name = message.from_user.full_name
     sticker_id = FRIEND_DATA.get(user_name)
+    await message.bot.send_chat_action(
+        chat_id=message.from_user.id,
+        action=ChatAction.TYPING,
+    )
+    await asyncio.sleep(1.5)
     await message.answer(
         f"""
         Привет, {html.bold(full_name)}! Я помогу тебе использовать свободное время с пользой!
            
-Что я могу:
+Что я умею:
         
 /bio - Информация о наших жабах
         """,
@@ -35,13 +42,21 @@ async def start_command(message: types.Message):
     )
 
     if sticker_id:
+        await message.bot.send_chat_action(
+            chat_id=message.from_user.id,
+            action=ChatAction.CHOOSE_STICKER,
+        )
+        await asyncio.sleep(1)
         await message.answer_sticker(sticker_id)
-    else:
-        await message.answer(f"Привет, {html.bold(full_name)}! 😎", parse_mode=ParseMode.HTML)
 
 
 @user_private_router.message(or_f(Command("bio"), (F.text.lower() == "жабы")))
 async def bio(message: types.Message):
+    await message.bot.send_chat_action(
+        chat_id=message.from_user.id,
+        action=ChatAction.TYPING,
+    )
+    await asyncio.sleep(1.5)
     await message.answer("О ком хочешь узнать?", reply_markup=await get_friends_keyboard())
 
 
@@ -61,6 +76,6 @@ async def friend_info_callback_query_handler(callback: CallbackQuery):
 async def back_to_menu_callback_query_handler(callback: CallbackQuery):
     await callback.answer()
     await callback.message.answer(
-        "Выберите команду из меню",
-        reply_markup=None
+        "Главное меню",
+        reply_markup=await main_menu_kb()
     )

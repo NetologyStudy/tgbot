@@ -24,7 +24,10 @@ async def get_friends_keyboard():
     return keyboard_builder.as_markup()
 
 
-
+async def main_menu_kb():
+    menu_kb = InlineKeyboardBuilder()
+    menu_kb.add(InlineKeyboardButton(text="Жабы", callback_data=CALLBACK_BACK_TO_MAIN))
+    return menu_kb.as_markup()
 # async def back():
 #     kb_back = InlineKeyboardBuilder()
 #     kb_back.add(InlineKeyboardButton(
