@@ -1,14 +1,15 @@
 import asyncio
+
 from aiogram import types, Router, html, F
 from aiogram.enums import ParseMode
 from aiogram.filters import or_f
 from aiogram.filters.command import Command, CommandStart
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 from aiogram.enums import ChatAction
 
-from keyboards.inline import get_friends_keyboard, CALLBACK_BACK_TO_MAIN, main_menu_kb
+from keyboards.inline import get_friends_keyboard, CALLBACK_BACK_TO_MAIN, main_menu_kb, my_schedule_kb
 
-from user_info import  FRIEND_DATA, FRIEND_INFO
+from user_info import FRIEND_DATA, FRIEND_INFO, schedule
 
 user_private_router = Router()
 
@@ -20,8 +21,16 @@ TEXT = """
 """
 
 
+
+@user_private_router.message(Command("schedule"))
+async def my_schedule(message: Message):
+    await message.answer("Выберите день", reply_markup=await my_schedule_kb())
+
+
+
+
 @user_private_router.message(CommandStart())
-async def start_command(message: types.Message):
+async def start_command(message: Message):
     user_name = message.from_user.username
     full_name = message.from_user.full_name
     sticker_id = FRIEND_DATA.get(user_name)
@@ -51,7 +60,7 @@ async def start_command(message: types.Message):
 
 
 @user_private_router.message(or_f(Command("bio"), (F.text.lower() == "жабы")))
-async def bio(message: types.Message):
+async def bio(message: Message):
     await message.bot.send_chat_action(
         chat_id=message.from_user.id,
         action=ChatAction.TYPING,
@@ -79,3 +88,8 @@ async def back_to_menu_callback_query_handler(callback: CallbackQuery):
         "Главное меню",
         reply_markup=await main_menu_kb()
     )
+
+
+@user_private_router.callback_query(F.data.in_(schedule))
+async def my_schedule_callback_query_handler(callback: CallbackQuery):
+    await callback.answer()
