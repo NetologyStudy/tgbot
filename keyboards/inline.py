@@ -1,12 +1,14 @@
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from user_info import FRIEND_INFO, schedule
+from data import FRIEND_INFO, schedule
 
 CALLBACK_BACK_TO_MAIN = "back_to_main_menu"
+CALLBACK_SHOW_FRIENDS = "show_friends"
+CALLBACK_BACK_TO_FRIENDS = "back_to_friends"
 
 
-async def get_friends_keyboard():
+def get_friends_keyboard():
     keyboard_builder = InlineKeyboardBuilder()
     for user_id, user_data in FRIEND_INFO.items():
         keyboard_builder.add(InlineKeyboardButton(
@@ -23,14 +25,20 @@ async def get_friends_keyboard():
     return keyboard_builder.as_markup()
 
 
-async def main_menu_kb():
+def back_to_friends_kb():
+    kb_back = InlineKeyboardBuilder()
+    kb_back.add(InlineKeyboardButton(text="Назад", callback_data=CALLBACK_BACK_TO_FRIENDS))
+    return kb_back.as_markup()
+
+
+def main_menu_kb():
     menu_kb = InlineKeyboardBuilder()
-    menu_kb.add(InlineKeyboardButton(text="Жабы", callback_data=CALLBACK_BACK_TO_MAIN ))
+    menu_kb.add(InlineKeyboardButton(text="Жабы", callback_data=CALLBACK_SHOW_FRIENDS))
     return menu_kb.as_markup()
 
 
 
-async def my_schedule_kb():
+def my_schedule_kb():
     schedule_kb = InlineKeyboardBuilder()
     for days, hours in schedule.items():
         schedule_kb.add(InlineKeyboardButton(text=f"{days}",
@@ -38,11 +46,3 @@ async def my_schedule_kb():
                                              )
                         )
     return schedule_kb.as_markup()
-# async def back():
-#     kb_back = InlineKeyboardBuilder()
-#     kb_back.add(InlineKeyboardButton(
-#         text="Назад",
-#         callback_data=CALLBACK_BACK_TO_MAIN
-#         )
-#     )
-#     return kb_back.as_markup()
